@@ -26,20 +26,14 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', '')
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', None)
 
-# ALLOWED_HOSTS = ['localhost', 'https://rentall-challenge-app.herokuapp.com/']
 ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-# CORS_ORIGIN_WHITELIST = [
-#     "localhost",
-#     "https://rentall-challenge-app.herokuapp.com/"
-# ]
 
 # Application definition
 
