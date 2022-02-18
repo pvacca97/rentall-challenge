@@ -31,14 +31,15 @@ SECRET_KEY = os.getenv('SECRET_KEY', '')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', 'https://rentall-challenge-app.herokuapp.com/']
+# ALLOWED_HOSTS = ['localhost', 'https://rentall-challenge-app.herokuapp.com/']
+ALLOWED_HOSTS = ['*']
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ORIGIN_WHITELIST = [
-    "localhost",
-    "https://rentall-challenge-app.herokuapp.com/"
-]
+# CORS_ORIGIN_WHITELIST = [
+#     "localhost",
+#     "https://rentall-challenge-app.herokuapp.com/"
+# ]
 
 # Application definition
 
