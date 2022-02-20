@@ -7,7 +7,7 @@ from todo.models import Task
 from todo.serializers import TaskSerializer
 
 
-class TaskDetailtest(TestCase):
+class TaskDetailTest(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
@@ -50,6 +50,49 @@ class TaskDetailtest(TestCase):
         task_exists = Task.objects.filter(id=1).exists()
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(task_exists)
+
+    def test_patch_title_task_detail(self):
+        post_payload = {
+            'title': 'test_title',
+            'description': 'test_description',
+            'date': '2020-01-01',
+            'isChecked': 'false'
+        }
+        patch_payload = {
+            'title': 'updated_test_title',
+        }
+        response = self.client.post('/task/', post_payload)
+        task = response.data['task']
+        task_id = task['id']
+        response = self.client.patch(f'/task/{task_id}/', patch_payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['task']['title'], patch_payload['title'])
+        self.assertEqual(response.data['task']['description'], post_payload['description'])
+        self.assertEqual(response.data['task']['date'], post_payload['date'])
+        self.assertEqual(response.data['task']['is_checked'], False)
+
+    def test_patch_all__task_detail(self):
+        post_payload = {
+            'title': 'test_title',
+            'description': 'test_description',
+            'date': '2020-01-01',
+            'isChecked': 'false'
+        }
+        patch_payload = {
+            'title': 'updated_test_title',
+            'description': 'updated_test_description',
+            'date': '2020-11-11',
+            'isChecked': 'true'
+        }
+        response = self.client.post('/task/', post_payload)
+        task = response.data['task']
+        task_id = task['id']
+        response = self.client.patch(f'/task/{task_id}/', patch_payload)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['task']['title'], patch_payload['title'])
+        self.assertEqual(response.data['task']['description'], patch_payload['description'])
+        self.assertEqual(response.data['task']['date'], patch_payload['date'])
+        self.assertEqual(response.data['task']['is_checked'], True)
 
     def test_get_task_list(self):
         Task.objects.create(
