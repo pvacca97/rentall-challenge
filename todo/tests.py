@@ -3,8 +3,8 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from todo.models import Task
-from todo.serializers import TaskSerializer
+from todo.models import Task, Category
+from todo.serializers import TaskSerializer, CategorySerializer
 
 
 class TaskDetailTest(TestCase):
@@ -15,12 +15,14 @@ class TaskDetailTest(TestCase):
             'testadmin'
         )
         self.client.force_authenticate(self.user)
+        self.category = Category.objects.create(id=1, name='test_category')
 
     def test_get_task_detail(self):
         Task.objects.create(
             id='1', title='test_title',
             description='test_description',
-            date='2020-01-01', is_checked='False'
+            date='2020-01-01', is_checked='False',
+            category=self.category
         )
         response = self.client.get('/task/1/')
         task = Task.objects.get(pk=1)
@@ -98,12 +100,14 @@ class TaskDetailTest(TestCase):
         Task.objects.create(
             id='1', title='test_title1',
             description='test_description1',
-            date='2020-01-01', is_checked='False'
+            date='2020-01-01', is_checked='False',
+            category=self.category
         )
         Task.objects.create(
             id='2', title='test_title2',
             description='test_description2',
-            date='2020-01-01', is_checked='False'
+            date='2020-01-01', is_checked='False',
+            category=self.category
         )
         response = self.client.get('/tasks/')
         tasks = Task.objects.all()
@@ -125,3 +129,45 @@ class TaskDetailTest(TestCase):
         }
         response = self.client.post('/task/', payload)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class TestCategoryDetail(TestCase):
+    def setUp(self) -> None:
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            'test@test.com',
+            'testadmin'
+        )
+        self.client.force_authenticate(self.user)
+
+    def test_get_category_list(self):
+        Category.objects.create(
+            id='2', name='test_category2'
+        )
+        Category.objects.create(
+            id='3', name='test_category3'
+        )
+        response = self.client.get('/categories/')
+        category_list = Category.objects.all()
+        serializer = CategorySerializer(category_list, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['category_list'], serializer.data)
+
+    def test_get_category_detail(self):
+        Category.objects.create(
+            id='2', name='test_category_2'
+        )
+        response = self.client.get('/category/2/')
+        category = Category.objects.get(pk=2)
+        serializer = CategorySerializer(category)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['category'], serializer.data)
+
+    def test_post_category_detail(self):
+        payload = {
+            'name': 'category_2'
+        }
+        response = self.client.post('/category/', payload)
+        category_exists = Category.objects.filter(id=response.data['category']['id']).exists()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(category_exists)
