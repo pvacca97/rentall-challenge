@@ -40,3 +40,13 @@ class TaskDetail(APIView):
         task = self.get_task(pk=pk)
         task.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request, pk):
+        task = self.get_task(pk=pk)
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            task_dict = {'task': serializer.data}
+            return Response(task_dict, status=status.HTTP_200_OK)
+        error_dict = {'error': serializer.errors}
+        return Response(error_dict, status=status.HTTP_400_BAD_REQUEST)
