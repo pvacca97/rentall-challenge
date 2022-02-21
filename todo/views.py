@@ -7,8 +7,8 @@ from todo.serializers import TaskSerializer, CategorySerializer
 
 
 class TaskList(APIView):
-    def get(self, request):
-        task_list = Task.objects.all().order_by('id')
+    def get(self, request, sort_type='id'):
+        task_list = Task.objects.all().order_by(sort_type)
         serializer = TaskSerializer(task_list, many=True)
         task_list_dict = {'task_list': serializer.data}
         return Response(task_list_dict, status=status.HTTP_200_OK)

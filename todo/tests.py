@@ -115,6 +115,45 @@ class TaskDetailTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['task_list'], serializer.data)
 
+    def test_get_task_list_date(self):
+        Task.objects.create(
+            id='1', title='test_title1',
+            description='test_description1',
+            date='2020-02-01', is_checked='False',
+            category=self.category
+        )
+        Task.objects.create(
+            id='2', title='test_title2',
+            description='test_description2',
+            date='2020-01-01', is_checked='False',
+            category=self.category
+        )
+        response = self.client.get('/tasks/date/')
+        tasks = Task.objects.all().order_by('date')
+        serializer = TaskSerializer(tasks, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['task_list'], serializer.data)
+
+    def test_get_task_list_category(self):
+        category = Category.objects.create(name='category_2')
+        Task.objects.create(
+            id='1', title='test_title1',
+            description='test_description1',
+            date='2020-01-01', is_checked='False',
+            category=category
+        )
+        Task.objects.create(
+            id='2', title='test_title2',
+            description='test_description2',
+            date='2020-01-01', is_checked='False',
+            category=self.category
+        )
+        response = self.client.get('/tasks/category/')
+        tasks = Task.objects.all().order_by('category')
+        serializer = TaskSerializer(tasks, many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['task_list'], serializer.data)
+
     def test_error_404(self):
         response = self.client.get('/task/1/')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
