@@ -22,8 +22,12 @@ from todo import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tasks/', views.TaskList.as_view(), name='tasks'),
+    path('tasks/<str:sort_type>/', views.TaskList.as_view(), name='tasks'),
     path('task/', views.TaskDetail.as_view(), name='task_generic'),
     path('task/<int:pk>/', views.TaskDetail.as_view(), name='task_detail_pk'),
+    path('categories/', views.CategoryList.as_view(), name='categories'),
+    path('category/', views.CategoryDetail.as_view(), name='category_detail'),
+    path('category/<str:pk>/', views.CategoryDetail.as_view(), name='category_detail_pk'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
