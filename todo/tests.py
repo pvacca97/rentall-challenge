@@ -15,7 +15,7 @@ class TaskDetailTest(TestCase):
             'testadmin'
         )
         self.client.force_authenticate(self.user)
-        self.category = Category.objects.create(id=1, name='test_category')
+        self.category = Category.objects.create(name='category_1')
 
     def test_get_task_detail(self):
         Task.objects.create(
@@ -73,7 +73,7 @@ class TaskDetailTest(TestCase):
         self.assertEqual(response.data['task']['date'], post_payload['date'])
         self.assertEqual(response.data['task']['is_checked'], False)
 
-    def test_patch_all__task_detail(self):
+    def test_patch_all_task_detail(self):
         post_payload = {
             'title': 'test_title',
             'description': 'test_description',
@@ -142,10 +142,10 @@ class TestCategoryDetail(TestCase):
 
     def test_get_category_list(self):
         Category.objects.create(
-            id='2', name='test_category2'
+            name='test_category2'
         )
         Category.objects.create(
-            id='3', name='test_category3'
+            name='test_category3'
         )
         response = self.client.get('/categories/')
         category_list = Category.objects.all()
@@ -155,10 +155,10 @@ class TestCategoryDetail(TestCase):
 
     def test_get_category_detail(self):
         Category.objects.create(
-            id='2', name='test_category_2'
+            name='test_category_2'
         )
-        response = self.client.get('/category/2/')
-        category = Category.objects.get(pk=2)
+        response = self.client.get('/category/test_category_2/')
+        category = Category.objects.get(pk='test_category_2')
         serializer = CategorySerializer(category)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['category'], serializer.data)
@@ -168,6 +168,6 @@ class TestCategoryDetail(TestCase):
             'name': 'category_2'
         }
         response = self.client.post('/category/', payload)
-        category_exists = Category.objects.filter(id=response.data['category']['id']).exists()
+        category_exists = Category.objects.filter(name=response.data['category']['name']).exists()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(category_exists)

@@ -54,7 +54,7 @@ class TaskDetail(APIView):
 
 class CategoryList(APIView):
     def get(self, request):
-        category_list = Category.objects.all().order_by('id')
+        category_list = Category.objects.all().order_by('name')
         serializer = CategorySerializer(category_list, many=True)
         category_list_dict = {'category_list': serializer.data}
         return Response(category_list_dict, status=status.HTTP_200_OK)
